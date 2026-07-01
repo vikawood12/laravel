@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+echo "=== CHECKING NGINX CONFIG ==="
+cat /etc/nginx/conf.d/default.conf | grep "fastcgi_pass"
+
 echo "Creating database file if not exists..."
 touch /var/www/html/database/database.sqlite
 chmod 666 /var/www/html/database/database.sqlite

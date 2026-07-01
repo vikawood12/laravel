@@ -2,7 +2,7 @@ FROM richarvey/nginx-php-fpm:latest
 
 COPY . .
 
-# Копируем наш конфиг nginx с TCP-соединением
+# ЭТА СТРОКА ДОЛЖНА БЫТЬ!
 COPY nginx-site.conf /etc/nginx/conf.d/default.conf
 
 ENV SKIP_COMPOSER 1

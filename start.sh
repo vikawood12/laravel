@@ -1,24 +1,23 @@
 #!/usr/bin/env bash
 
-echo "=== ПОЛНАЯ ОЧИСТКА КЭША ==="
-php artisan route:clear
-php artisan config:clear
-php artisan cache:clear
-php artisan view:clear
+echo "=== ОЧИСТКА КЭША ==="
+php artisan optimize:clear
 
-echo "=== ПЕРЕГЕНЕРАЦИЯ КЭША ==="
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
+echo "=== СПИСОК МАРШРУТОВ ==="
+php artisan route:list
 
-echo "=== ПРОВЕРКА МАРШРУТОВ ==="
-php artisan route:list | grep -E "schedule|booking|membership|contacts|debug|test-view" || echo "МАРШРУТЫ НЕ НАЙДЕНЫ!"
+echo "=== ПРОВЕРКА ФАЙЛОВ ==="
+pwd
+ls -la /var/www/html
+ls -la /var/www/html/public
+ls -la /var/www/html/routes
 
-echo "=== БАЗА ДАННЫХ ==="
+echo "=== МИГРАЦИИ ==="
 touch /var/www/html/database/database.sqlite
 chmod 666 /var/www/html/database/database.sqlite
 
-echo "=== МИГРАЦИИ ==="
 php artisan migrate --force
 
-echo "=== ПРИЛОЖЕНИЕ ЗАПУЩЕНО ==="
+echo "=== ЗАПУСК ==="
+
+exec /usr/bin/supervisord -n

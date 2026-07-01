@@ -1,23 +1,26 @@
 FROM richarvey/nginx-php-fpm:latest
 
-COPY . .
+WORKDIR /var/www/html
 
-# ЭТА СТРОКА ДОЛЖНА БЫТЬ!
+COPY . /var/www/html
+
 COPY nginx-site.conf /etc/nginx/conf.d/default.conf
 
-ENV SKIP_COMPOSER 1
-ENV WEBROOT /var/www/html/public
-ENV PHP_ERRORS_STDERR 1
-ENV RUN_SCRIPTS 1
-ENV REAL_IP_HEADER 1
+ENV SKIP_COMPOSER=1
+ENV WEBROOT=/var/www/html/public
+ENV PHP_ERRORS_STDERR=1
+ENV RUN_SCRIPTS=1
+ENV REAL_IP_HEADER=1
 
-ENV APP_ENV production
-ENV APP_DEBUG false
-ENV LOG_CHANNEL stderr
+ENV APP_ENV=production
+ENV APP_DEBUG=false
+ENV LOG_CHANNEL=stderr
 
-ENV COMPOSER_ALLOW_SUPERUSER 1
+ENV COMPOSER_ALLOW_SUPERUSER=1
 
-RUN mkdir -p /var/www/html/database && chmod -R 777 /var/www/html/database
-RUN composer install --no-dev --no-interaction --prefer-dist
+RUN composer install --no-dev --optimize-autoloader --no-interaction
+
+RUN mkdir -p storage/framework/{cache,sessions,views}
+RUN chmod -R 775 storage bootstrap/cache
 
 CMD ["/start.sh"]

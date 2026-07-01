@@ -36,14 +36,4 @@ Route::get('/admin/stats', [AdminController::class, 'stats'])->name('admin.stats
 // Аутентификация (ТОЛЬКО ОДИН РАЗ!)
 Auth::routes();
 
-// ДИАГНОСТИКА
-Route::get('/test-view', function() {
-    return 'Тестовый маршрут работает!';
-});
-
-Route::get('/debug', function() {
-    return response()->json([
-        'status' => 'ok',
-        'message' => 'Диагностика работает!'
-    ]);
-});
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

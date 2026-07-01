@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-echo "=== CHECKING NGINX CONFIG ==="
+echo "=== ПРОВЕРКА КОНФИГА NGINX ==="
 cat /etc/nginx/conf.d/default.conf | grep "fastcgi_pass"
 
 echo "Creating database file if not exists..."

@@ -36,33 +36,14 @@ Route::get('/admin/stats', [AdminController::class, 'stats'])->name('admin.stats
 // Аутентификация (ТОЛЬКО ОДИН РАЗ!)
 Auth::routes();
 
-// Диагностический маршрут
-Route::get('/debug', function() {
-    try {
-        $tables = DB::select("SELECT name FROM sqlite_master WHERE type='table'");
-        $dbExists = file_exists(database_path('database.sqlite'));
-        return response()->json([
-            'status' => 'ok',
-            'db_file_exists' => $dbExists,
-            'db_path' => database_path('database.sqlite'),
-            'tables' => array_column($tables, 'name'),
-            'env_debug' => env('APP_DEBUG'),
-            'env_env' => env('APP_ENV'),
-        ]);
-    } catch (\Exception $e) {
-        return response()->json([
-            'status' => 'error',
-            'message' => $e->getMessage(),
-            'file' => $e->getFile(),
-            'line' => $e->getLine()
-        ], 500);
-    }
+// ДИАГНОСТИКА
+Route::get('/test-view', function() {
+    return 'Тестовый маршрут работает!';
 });
 
-Route::get('/test-view', function() {
-    try {
-        return view('home.index');
-    } catch (Exception $e) {
-        return $e->getMessage();
-    }
+Route::get('/debug', function() {
+    return response()->json([
+        'status' => 'ok',
+        'message' => 'Диагностика работает!'
+    ]);
 });

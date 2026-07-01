@@ -30,19 +30,17 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     Route::delete('/booking/{id}', [AdminController::class, 'destroy'])->name('admin.booking.delete');
 });
 
-// Маршруты авторизации
-Route::get('/admin/stats', [App\Http\Controllers\AdminController::class, 'stats'])->name('admin.stats')->middleware('auth');
+// Статистика
+Route::get('/admin/stats', [AdminController::class, 'stats'])->name('admin.stats')->middleware('auth');
+
+// Аутентификация (ТОЛЬКО ОДИН РАЗ!)
 Auth::routes();
 
-// ДИАГНОСТИЧЕСКИЙ МАРШРУТ
+// Диагностический маршрут
 Route::get('/debug', function() {
     try {
-        // Проверяем базу данных
         $tables = DB::select("SELECT name FROM sqlite_master WHERE type='table'");
-        
-        // Проверяем наличие файла базы
         $dbExists = file_exists(database_path('database.sqlite'));
-        
         return response()->json([
             'status' => 'ok',
             'db_file_exists' => $dbExists,
@@ -60,7 +58,3 @@ Route::get('/debug', function() {
         ], 500);
     }
 });
-
-Auth::routes();
-
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

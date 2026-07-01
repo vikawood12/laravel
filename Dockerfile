@@ -15,6 +15,9 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Копируем проект
 COPY . /var/www/html/
 
+# УСТАНАВЛИВАЕМ ЗАВИСИМОСТИ COMPOSER
+RUN composer install --no-dev --no-interaction --prefer-dist
+
 # Даём права на запись
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
     && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
@@ -22,7 +25,7 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
 # Создаём папку для базы данных
 RUN mkdir -p /var/www/html/database && chmod -R 777 /var/www/html/database
 
-# Настраиваем Apache (ВСЯ КОНФИГУРАЦИЯ В ОДНОЙ СТРОКЕ!)
+# Настраиваем Apache
 RUN echo "<VirtualHost *:80>\n\tDocumentRoot /var/www/html/public\n\t<Directory /var/www/html/public>\n\t\tOptions -Indexes +FollowSymLinks\n\t\tAllowOverride All\n\t\tRequire all granted\n\t\tFallbackResource /index.php\n\t</Directory>\n\tErrorLog \${APACHE_LOG_DIR}/error.log\n\tCustomLog \${APACHE_LOG_DIR}/access.log combined\n</VirtualHost>" > /etc/apache2/sites-available/000-default.conf
 
 EXPOSE 80

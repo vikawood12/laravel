@@ -3,7 +3,7 @@ echo "Creating database file if not exists..."
 touch /var/www/html/database/database.sqlite
 chmod 666 /var/www/html/database/database.sqlite
 
-echo "Clearing all cache..."
+echo "=== FORCE ROUTE RELOAD ==="
 php artisan route:clear
 php artisan config:clear
 php artisan cache:clear

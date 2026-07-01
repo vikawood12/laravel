@@ -15,11 +15,14 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Копируем проект
 COPY . /var/www/html/
 
-# Даём права на запись для SQLite
+# Даём права на запись для SQLite и кэша
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
     && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Настраиваем виртуальный хост для Laravel
+# Создаём папку для базы данных
+RUN mkdir -p /var/www/html/database && chmod -R 777 /var/www/html/database
+
+# Копируем конфиг Apache (создаём отдельный файл)
 RUN echo '<VirtualHost *:80>
     DocumentRoot /var/www/html/public
     <Directory /var/www/html/public>
@@ -31,9 +34,6 @@ RUN echo '<VirtualHost *:80>
     ErrorLog ${APACHE_LOG_DIR}/error.log
     CustomLog ${APACHE_LOG_DIR}/access.log combined
 </VirtualHost>' > /etc/apache2/sites-available/000-default.conf
-
-# Настройка прав для SQLite
-RUN mkdir -p /var/www/html/database && chmod -R 777 /var/www/html/database
 
 EXPOSE 80
 

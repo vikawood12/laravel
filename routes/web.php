@@ -58,3 +58,11 @@ Route::get('/debug', function() {
         ], 500);
     }
 });
+
+Route::get('/test-view', function() {
+    try {
+        return view('home.index');
+    } catch (Exception $e) {
+        return $e->getMessage();
+    }
+});

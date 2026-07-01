@@ -1,23 +1,21 @@
 #!/usr/bin/env bash
 
 echo "=== ОЧИСТКА КЭША ==="
-php artisan optimize:clear
+php artisan route:clear
+php artisan config:clear
+php artisan cache:clear
+php artisan view:clear
 
-echo "=== СПИСОК МАРШРУТОВ ==="
-php artisan route:list
+echo "=== КЭШИРОВАНИЕ ==="
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
 
-echo "=== ПРОВЕРКА ФАЙЛОВ ==="
-pwd
-ls -la /var/www/html
-ls -la /var/www/html/public
-ls -la /var/www/html/routes
-
-echo "=== МИГРАЦИИ ==="
+echo "=== БАЗА ДАННЫХ ==="
 touch /var/www/html/database/database.sqlite
 chmod 666 /var/www/html/database/database.sqlite
 
+echo "=== МИГРАЦИИ ==="
 php artisan migrate --force
 
-echo "=== ЗАПУСК ==="
-
-exec /usr/bin/supervisord -n
+echo "=== ПРИЛОЖЕНИЕ ЗАПУЩЕНО ==="

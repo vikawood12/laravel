@@ -1,26 +1,40 @@
-FROM richarvey/nginx-php-fpm:latest
+FROM php:8.3-apache
 
-WORKDIR /var/www/html
+# Устанавливаем зависимости
+RUN apt-get update && apt-get install -y \
+    libsqlite3-dev \
+    zip \
+    unzip \
+    git \
+    && docker-php-ext-install pdo_sqlite \
+    && a2enmod rewrite
 
-COPY . /var/www/html
+# Устанавливаем Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-COPY nginx-site.conf /etc/nginx/conf.d/default.conf
+# Копируем проект
+COPY . /var/www/html/
 
-ENV SKIP_COMPOSER=1
-ENV WEBROOT=/var/www/html/public
-ENV PHP_ERRORS_STDERR=1
-ENV RUN_SCRIPTS=1
-ENV REAL_IP_HEADER=1
+# Даём права на запись для SQLite
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
+    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-ENV APP_ENV=production
-ENV APP_DEBUG=false
-ENV LOG_CHANNEL=stderr
+# Настраиваем виртуальный хост для Laravel
+RUN echo '<VirtualHost *:80>
+    DocumentRoot /var/www/html/public
+    <Directory /var/www/html/public>
+        Options -Indexes +FollowSymLinks
+        AllowOverride All
+        Require all granted
+        FallbackResource /index.php
+    </Directory>
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>' > /etc/apache2/sites-available/000-default.conf
 
-ENV COMPOSER_ALLOW_SUPERUSER=1
+# Настройка прав для SQLite
+RUN mkdir -p /var/www/html/database && chmod -R 777 /var/www/html/database
 
-RUN composer install --no-dev --optimize-autoloader --no-interaction
+EXPOSE 80
 
-RUN mkdir -p storage/framework/{cache,sessions,views}
-RUN chmod -R 775 storage bootstrap/cache
-
-CMD ["/start.sh"]
+CMD ["apache2-foreground"]
